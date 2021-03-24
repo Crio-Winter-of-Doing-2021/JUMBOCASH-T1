@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -22,9 +23,18 @@ public class MyUserDetails implements UserDetails {
         this.password = userEntity.getPassword();
         this.isActive = userEntity.isActive();
         this.email = userEntity.getEmail();
-        this.authorities = Arrays.stream(userEntity.getRoles().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        this.authorities = getAuthoritiesFromUserEntity(userEntity);
+    }
+
+    private List<GrantedAuthority> getAuthoritiesFromUserEntity(UserEntity userEntity) {
+        if(userEntity.getRoles() == null || userEntity.getRoles().isEmpty()) {
+            return new ArrayList<GrantedAuthority>();
+        }
+        else {
+            return Arrays.stream(userEntity.getRoles().split(","))
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        }
     }
 
     public MyUserDetails() {
