@@ -32,11 +32,6 @@ public class CashflowController {
     @Autowired
     private MyUserDetailsService userDetailsService;
 
-    @GetMapping ("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok("Hello World");
-    }
-
     @PostMapping("/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
@@ -67,7 +62,7 @@ public class CashflowController {
     }
 
 
-    @PostMapping("/{email}/entity")
+    @PostMapping("/entity/{email}")
     ResponseEntity<?> addEntity(@RequestBody @Valid Entity entity , @PathVariable String email ) {
 
         AddEntityResponse addEntityResponse = userService.addEntity(entity, email);
@@ -75,7 +70,7 @@ public class CashflowController {
         return ResponseEntity.ok(addEntityResponse);
     }
 
-    @GetMapping("/{email}/entity")
+    @GetMapping("/entity/{email}")
     ResponseEntity<?> getEntities(@PathVariable String email ) {
 
         GetEntitiesResponse getEntitiesResponse = userService.getEntities(email);
@@ -83,7 +78,7 @@ public class CashflowController {
         return ResponseEntity.ok(getEntitiesResponse);
     }
 
-    @GetMapping("/{email}/transaction")
+    @GetMapping("/transaction/{email}")
     ResponseEntity<?> getTransactions(@PathVariable String email ) {
 
         GetTransactionsResponse getTransactionsResponse = userService.getTransactions(email);
@@ -91,7 +86,7 @@ public class CashflowController {
         return ResponseEntity.ok(getTransactionsResponse);
     }
 
-    @PostMapping("/{email}/transaction")
+    @PostMapping("/transaction/{email}")
     ResponseEntity<?> addTransaction(@RequestBody @Valid Transaction transaction , @PathVariable String email ) {
 
         AddTransactionResponse addTransactionResponse = userService.addTransaction(transaction, email);
