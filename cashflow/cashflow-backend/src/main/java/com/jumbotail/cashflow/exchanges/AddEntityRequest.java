@@ -5,18 +5,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRegistrationRequest {
+public class AddEntityRequest {
+
     @NotBlank
-    private String userName;
+    private String type;
     @NotBlank
-    private String password;
-    @NotBlank
-    private String email;
-    @NotBlank
-    private String roles;
+    private String name;
+    private String contactNo;
+    private String address;
 }

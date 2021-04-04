@@ -1,47 +1,48 @@
 package com.jumbotail.cashflow.models;
 
-import com.jumbotail.cashflow.dto.Entity;
-import com.jumbotail.cashflow.dto.Transaction;
+import com.jumbotail.cashflow.dto.TransactionDto;
+import com.jumbotail.cashflow.dto.EntityDto;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Generated;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 
-import net.bytebuddy.dynamic.loading.InjectionClassLoader;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "users")
 @Data
-@Document(collection = "cashflowusers")
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @NotNull
-    private String username;
+    @Column(name = "user_name", nullable = false)
+    private String userName;
 
-    @NotNull
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @NotNull
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @NotNull
+    @Column(name = "roles", nullable = false)
     private String roles;
 
-    private boolean isActive;
-
-    private List<Entity> entitiesList;
-
-    private List<Transaction> transactionsList;
-
+    @Column(name = "cash_in", nullable = false)
     private Long cashIn;
 
+    @Column(name = "cash_out", nullable = false)
     private Long cashOut;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "entity_fk", referencedColumnName = "id")
+    List<TransactionEntity> transactionEntities = new ArrayList<>();
+
 
 }

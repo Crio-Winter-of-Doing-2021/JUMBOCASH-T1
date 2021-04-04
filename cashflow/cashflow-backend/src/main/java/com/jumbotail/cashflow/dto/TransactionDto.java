@@ -5,18 +5,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transaction {
+public class TransactionDto {
+    @NotNull
+    private Long id;
     @NotNull
     private Long amount;
     private String type;
     private String modeOfPayment;
     @NotNull
-    private Date timestamp;
-    private Entity entity;
+    private Timestamp timestamp;
+    private Long entityId;
     private String remarks;
+    private String status;
 }

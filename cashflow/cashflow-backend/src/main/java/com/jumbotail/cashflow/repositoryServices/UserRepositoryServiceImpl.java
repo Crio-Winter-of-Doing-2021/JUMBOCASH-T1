@@ -1,51 +1,51 @@
 package com.jumbotail.cashflow.repositoryServices;
 
-import com.jumbotail.cashflow.dto.Entity;
+import com.jumbotail.cashflow.dto.EntityDto;
+import com.jumbotail.cashflow.dto.TransactionDto;
 import com.jumbotail.cashflow.dto.MyUserDetails;
-import com.jumbotail.cashflow.dto.Transaction;
-import com.jumbotail.cashflow.exchanges.AddTransactionResponse;
-import com.jumbotail.cashflow.exchanges.GetTransactionsResponse;
-import com.jumbotail.cashflow.exchanges.UserRegistrationRequest;
-import com.jumbotail.cashflow.exchanges.UserRegistrationResponse;
+import com.jumbotail.cashflow.exchanges.*;
+import com.jumbotail.cashflow.models.Transaction;
+import com.jumbotail.cashflow.models.TransactionEntity;
 import com.jumbotail.cashflow.models.UserEntity;
+import com.jumbotail.cashflow.repository.TransactionEntityRepository;
+import com.jumbotail.cashflow.repository.UserRepository;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.Provider;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Query.query;
+import java.util.Optional;
 
 @Service
 public class UserRepositoryServiceImpl implements UserRepositoryService {
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private UserRepository userRepository;
+
+    @Autowired
+    private TransactionEntityRepository transactionEntityRepository;
 
     @Override
     public MyUserDetails getUserByUserName(String userName) {
-        UserEntity userEntity = mongoTemplate.findOne(query(where("username").is(userName)), UserEntity.class);
-        if (userEntity == null) {
+        Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
+        if (!userEntity.isPresent()) {
             throw new UsernameNotFoundException("Not Found Any User with UserName: " + userName);
         }
-        MyUserDetails myUserDetails = new MyUserDetails(userEntity);
+        MyUserDetails myUserDetails = new MyUserDetails(userEntity.get());
         return myUserDetails;
     }
 
     @Override
-    public MyUserDetails getUserByEmail(String email) {
-        UserEntity userEntity = mongoTemplate.findOne(query(where("email").is(email)), UserEntity.class);
-        if (userEntity == null) {
-            throw new UsernameNotFoundException("Not Found Any User with Email: " + email);
-        }
-        MyUserDetails myUserDetails = new MyUserDetails(userEntity);
-        return myUserDetails;
+    public Boolean userEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Boolean userUserNameExists(String userName) {
+        return userRepository.existsByUserName(userName);
     }
 
     @Override
@@ -54,56 +54,85 @@ public class UserRepositoryServiceImpl implements UserRepositoryService {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
 
         UserEntity userEntity = modelMapper.map(userRegistrationRequest, UserEntity.class);
-        userEntity.setActive(true);
-        userEntity.setEntitiesList(new LinkedList<Entity>());
-        userEntity.setTransactionsList(new LinkedList<Transaction>());
+        userEntity.setTransactionEntities(new ArrayList<>());
         userEntity.setCashIn(Long.valueOf("0"));
         userEntity.setCashOut(Long.valueOf("0"));
-        userEntity = mongoTemplate.save(userEntity);
+        userEntity = userRepository.save(userEntity);
         UserRegistrationResponse userRegistrationResponse = modelMapper.map(userEntity, UserRegistrationResponse.class);
 
         return userRegistrationResponse;
     }
 
     @Override
-    public String addEntity(Entity entity, String email) {
+    public String addEntity(AddEntityRequest addEntityRequest, String userName) {
 
-        UserEntity userEntity = mongoTemplate.findOne(query(where("email").is(email)), UserEntity.class);
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
 
-        List<Entity> entityList = userEntity.getEntitiesList();
-        entityList.add(entity);
-        mongoTemplate.save(userEntity);
+        UserEntity userEntity = userRepository.findByUserName(userName).get();
+
+        List<TransactionEntity> transactionEntities = userEntity.getTransactionEntities();
+        TransactionEntity transactionEntity = modelMapper.map(addEntityRequest, TransactionEntity.class);
+        transactionEntity.setTransactions(new ArrayList<>());
+        transactionEntities.add(transactionEntity);
+        userRepository.save(userEntity);
 
         return "Entity added Successfully";
     }
 
     @Override
-    public List<Entity> getEntities(String email) {
-        UserEntity userEntity = mongoTemplate.findOne(query(where("email").is(email)), UserEntity.class);
+    public List<EntityDto> getEntities(String userName) {
 
-        List<Entity> entityList = userEntity.getEntitiesList();
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
 
-        return entityList;
+        UserEntity userEntity = userRepository.findByUserName(userName).get();
+
+        List<TransactionEntity> transactionEntities = userEntity.getTransactionEntities();
+        List<EntityDto> entityDtoList = new ArrayList<>();
+
+        for(TransactionEntity txnEntity : transactionEntities) {
+            EntityDto entityDto = modelMapper.map(txnEntity, EntityDto.class);
+            entityDtoList.add(entityDto);
+        }
+
+        return entityDtoList;
     }
 
     @Override
-    public GetTransactionsResponse getTransactions(String email) {
-        UserEntity userEntity = mongoTemplate.findOne(query(where("email").is(email)), UserEntity.class);
+    public GetTransactionsResponse getTransactions(String userName) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
 
-        List<Transaction> transactionList = userEntity.getTransactionsList();
+        UserEntity userEntity = userRepository.findByUserName(userName).get();
+
         Long cashIn = userEntity.getCashIn();
         Long cashOut = userEntity.getCashOut();
+        List<TransactionDto> allTransactionDtoList = new ArrayList<>();
 
-        GetTransactionsResponse getTransactionsResponse = new GetTransactionsResponse(transactionList, cashIn, cashOut);
+        List<TransactionEntity> transactionEntities = userEntity.getTransactionEntities();
+
+        for(TransactionEntity txnEntity : transactionEntities) {
+            List<Transaction> txnList = txnEntity.getTransactions();
+            for(Transaction txn : txnList) {
+                TransactionDto transactionDto = modelMapper.map(txn, TransactionDto.class);
+                transactionDto.setEntityId(txnEntity.getId());
+                allTransactionDtoList.add(transactionDto);
+            }
+        }
+        GetTransactionsResponse getTransactionsResponse = new GetTransactionsResponse(allTransactionDtoList, cashIn, cashOut);
         return getTransactionsResponse;
     }
 
     @Override
-    public AddTransactionResponse addTransaction(Transaction transaction, String email) {
-        UserEntity userEntity = mongoTemplate.findOne(query(where("email").is(email)), UserEntity.class);
-        List<Transaction> transactionList = userEntity.getTransactionsList();
-        transactionList.add(transaction);
-        Long amountToTransact = transaction.getAmount();
+    public AddTransactionResponse addTransaction(AddTransactionRequest addTransactionRequest, String userName) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
+
+        UserEntity userEntity = userRepository.findByUserName(userName).get();
+
+        TransactionEntity txnEntity = transactionEntityRepository.findById(addTransactionRequest.getEntityId()).get();
+        Long amountToTransact = addTransactionRequest.getAmount();
         Long cashIn = userEntity.getCashIn();
         Long cashOut = userEntity.getCashOut();
         if(amountToTransact > 0 ) {
@@ -114,7 +143,12 @@ public class UserRepositoryServiceImpl implements UserRepositoryService {
             cashOut = cashOut + amountToTransact;
             userEntity.setCashOut(cashOut);
         }
-        userEntity = mongoTemplate.save(userEntity);
+        userEntity = userRepository.save(userEntity);
+
+        Transaction txn = modelMapper.map(addTransactionRequest, Transaction.class);
+        txnEntity.getTransactions().add(txn);
+
+        transactionEntityRepository.save(txnEntity);
 
         AddTransactionResponse addTransactionResponse = new AddTransactionResponse(userEntity.getCashIn(), userEntity.getCashOut());
 

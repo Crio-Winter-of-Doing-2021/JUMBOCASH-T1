@@ -10,12 +10,12 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Entity {
-    @NotBlank
+public class EntityDto {
     @NotNull
+    private Long id;
+    @NotBlank
     private String type;
     @NotBlank
-    @NotNull
     private String name;
     private String contactNo;
     private String address;
