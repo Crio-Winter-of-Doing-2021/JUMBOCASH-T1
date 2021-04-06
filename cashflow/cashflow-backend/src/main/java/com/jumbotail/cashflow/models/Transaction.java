@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name = "amount", nullable = false)
@@ -35,4 +35,5 @@ public class Transaction {
 
     @Column(name = "remarks", nullable = false)
     private String remarks;
+
 }

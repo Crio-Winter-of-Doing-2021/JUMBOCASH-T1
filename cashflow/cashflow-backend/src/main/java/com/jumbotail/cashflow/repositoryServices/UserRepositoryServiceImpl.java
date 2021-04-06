@@ -14,8 +14,10 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,18 +122,31 @@ public class UserRepositoryServiceImpl implements UserRepositoryService {
                 allTransactionDtoList.add(transactionDto);
             }
         }
+        Collections.sort(allTransactionDtoList, (a, b) -> (a.getTimestamp().compareTo(b.getTimestamp())));
         GetTransactionsResponse getTransactionsResponse = new GetTransactionsResponse(allTransactionDtoList, cashIn, cashOut);
         return getTransactionsResponse;
     }
 
     @Override
+    @Transactional
     public AddTransactionResponse addTransaction(AddTransactionRequest addTransactionRequest, String userName) {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
 
         UserEntity userEntity = userRepository.findByUserName(userName).get();
 
-        TransactionEntity txnEntity = transactionEntityRepository.findById(addTransactionRequest.getEntityId()).get();
+        List<TransactionEntity> txnEntities = userEntity.getTransactionEntities();
+        TransactionEntity entity = null;
+        for(TransactionEntity txnEntity : txnEntities) {
+            if(txnEntity.getId() == addTransactionRequest.getEntityId()) {
+                entity = txnEntity;
+                break;
+            }
+        }
+        if(entity == null) {
+            return null;
+        }
+
         Long amountToTransact = addTransactionRequest.getAmount();
         Long cashIn = userEntity.getCashIn();
         Long cashOut = userEntity.getCashOut();
@@ -143,12 +158,11 @@ public class UserRepositoryServiceImpl implements UserRepositoryService {
             cashOut = cashOut + amountToTransact;
             userEntity.setCashOut(cashOut);
         }
-        userEntity = userRepository.save(userEntity);
 
         Transaction txn = modelMapper.map(addTransactionRequest, Transaction.class);
-        txnEntity.getTransactions().add(txn);
+        entity.getTransactions().add(txn);
 
-        transactionEntityRepository.save(txnEntity);
+        userEntity = userRepository.save(userEntity);
 
         AddTransactionResponse addTransactionResponse = new AddTransactionResponse(userEntity.getCashIn(), userEntity.getCashOut());
 

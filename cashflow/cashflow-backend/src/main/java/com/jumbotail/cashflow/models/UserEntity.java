@@ -19,7 +19,7 @@ import java.util.List;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name = "user_name", nullable = false)
@@ -43,6 +43,5 @@ public class UserEntity {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "entity_fk", referencedColumnName = "id")
     List<TransactionEntity> transactionEntities = new ArrayList<>();
-
 
 }
