@@ -1,19 +1,28 @@
 package com.jumbotail.cashflow.services;
 
-import com.jumbotail.cashflow.dto.Entity;
-import com.jumbotail.cashflow.dto.MyUserDetails;
-import com.jumbotail.cashflow.dto.Transaction;
+import com.jumbotail.cashflow.dto.EntityDto;
+import com.jumbotail.cashflow.dto.TransactionDto;
 import com.jumbotail.cashflow.exchanges.*;
 
 
 public interface UserService {
     UserRegistrationResponse registerUser(UserRegistrationRequest userRegistrationRequest);
 
-    AddEntityResponse addEntity(Entity entity, String email);
+    AddEntityResponse addEntity(AddEntityRequest addEntityRequest, String userName);
 
-    GetEntitiesResponse getEntities(String email);
+    GetEntitiesResponse getEntities(String userName);
 
-    GetTransactionsResponse getTransactions(String email);
+    GetTransactionsResponse getTransactions(String userName);
 
-    AddTransactionResponse addTransaction(Transaction transaction, String email);
+    GetTransactionsResponse getTransactions(String userName, Long entityId);
+
+    AddTransactionResponse addTransaction(AddTransactionRequest addTransactionRequest, String userName);
+
+    EntityDto getEntity(String userName, Long entityId);
+
+    void updateEntity(String userName, EntityDto entity);
+
+    TransactionDto getTransaction(String userName, Long txnId, Long entityId);
+
+    void updateTransaction(String userName, TransactionDto txn);
 }

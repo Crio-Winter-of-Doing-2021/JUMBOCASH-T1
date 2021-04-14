@@ -10,5 +10,4 @@ public class CashflowApplication {
 		SpringApplication.run(CashflowApplication.class, args);
 	}
 
-
 }

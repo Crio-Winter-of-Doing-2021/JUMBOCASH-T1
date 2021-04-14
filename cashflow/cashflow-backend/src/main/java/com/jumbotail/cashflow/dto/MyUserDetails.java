@@ -14,14 +14,12 @@ import java.util.stream.Collectors;
 public class MyUserDetails implements UserDetails {
     private String userName;
     private String password;
-    private boolean isActive;
     private String email;
     private List<GrantedAuthority> authorities;
 
     public MyUserDetails(UserEntity userEntity) {
-        this.userName = userEntity.getUsername();
+        this.userName = userEntity.getUserName();
         this.password = userEntity.getPassword();
-        this.isActive = userEntity.isActive();
         this.email = userEntity.getEmail();
         this.authorities = getAuthoritiesFromUserEntity(userEntity);
     }
@@ -74,6 +72,6 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isActive;
+        return true;
     }
 }
