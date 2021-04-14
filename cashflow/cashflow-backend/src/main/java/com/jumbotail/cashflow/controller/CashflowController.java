@@ -14,9 +14,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.lang.reflect.Field;
+import java.util.Map;
 
 @Controller
 public class CashflowController {
@@ -61,7 +64,7 @@ public class CashflowController {
     }
 
     @PostMapping("/register")
-    ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest) throws Exception {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest) {
 
         UserRegistrationResponse userRegistrationResponse = userService.registerUser(userRegistrationRequest);
 
@@ -78,28 +81,83 @@ public class CashflowController {
     }
 
     @GetMapping("/entity")
-    ResponseEntity<?> getEntities( ) {
+    public ResponseEntity<?> getEntities( ) {
 
         GetEntitiesResponse getEntitiesResponse = userService.getEntities(getUserName());
 
         return ResponseEntity.ok(getEntitiesResponse);
     }
 
+    @GetMapping("/entity/{entityId}")
+    public ResponseEntity<?> getEntities(@PathVariable Long entityId ) {
+
+        EntityDto entity = userService.getEntity(getUserName(), entityId);
+
+        return ResponseEntity.ok(entity);
+    }
+
     @GetMapping("/transaction")
-    ResponseEntity<?> getTransactions( ) {
+    public ResponseEntity<?> getTransactions( ) {
 
         GetTransactionsResponse getTransactionsResponse = userService.getTransactions(getUserName());
 
         return ResponseEntity.ok(getTransactionsResponse);
     }
 
+    @GetMapping("/transaction/entity/{entityId}")
+    public ResponseEntity<?> getTransactions( @PathVariable Long entityId) {
+
+        GetTransactionsResponse getTransactionsResponse = userService.getTransactions(getUserName(), entityId);
+
+        return ResponseEntity.ok(getTransactionsResponse);
+    }
+
+    @GetMapping("/transaction/{txnId}/entity/{entityId}")
+    public ResponseEntity<?> getTransaction( @PathVariable Long txnId, @PathVariable Long entityId) {
+
+        TransactionDto txn = userService.getTransaction(getUserName(), txnId, entityId);
+
+        return ResponseEntity.ok(txn);
+    }
+
     @PostMapping("/transaction")
-    ResponseEntity<?> addTransaction(@RequestBody @Valid AddTransactionRequest addTransactionRequest) {
+    public ResponseEntity<?> addTransaction(@RequestBody @Valid AddTransactionRequest addTransactionRequest) {
 
         AddTransactionResponse addTransactionResponse = userService.addTransaction(addTransactionRequest, getUserName());
 
         return ResponseEntity.ok(addTransactionResponse);
     }
+
+    @PatchMapping("/entity/{entityId}")
+    public ResponseEntity<?> updateEntity(@PathVariable Long entityId, @RequestBody Map<Object, Object> fields) {
+        EntityDto entity = userService.getEntity(getUserName(), entityId);
+        fields.forEach((k, v) -> {
+            Field field = ReflectionUtils.findField(EntityDto.class, (String) k);
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, entity, v);
+        });
+        userService.updateEntity(getUserName(), entity);
+        return ResponseEntity.ok("Successful");
+    }
+
+    @PatchMapping("/transaction/{txnId}/entity/{entityId}")
+    public ResponseEntity<?> updateEntity(@PathVariable(name="txnId",required=true) Long txnId, @PathVariable(name="entityId",required=true) Long entityId, @RequestBody Map<Object, Object> fields) {
+        TransactionDto txn = userService.getTransaction(getUserName(), txnId, entityId);
+        fields.forEach((k, v) -> {
+            Field field = ReflectionUtils.findField(TransactionDto.class, (String) k);
+            field.setAccessible(true);
+            if(k.equals("amount") || k.equals("entityId")) {
+                ReflectionUtils.setField(field, txn, Long.valueOf("" + v));
+            }
+            else {
+                ReflectionUtils.setField(field, txn, v);
+            }
+        });
+        userService.updateTransaction(getUserName(), txn);
+        return ResponseEntity.ok("Successful");
+    }
+
+
 
 
 

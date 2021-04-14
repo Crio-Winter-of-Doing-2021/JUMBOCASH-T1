@@ -23,6 +23,16 @@ public interface UserRepositoryService {
     List<EntityDto> getEntities(String userName);
 
     GetTransactionsResponse getTransactions(String userName);
+    
+    GetTransactionsResponse getTransactions(String userName, Long entityId);
 
     AddTransactionResponse addTransaction(AddTransactionRequest addTransactionRequest, String userName);
+
+    EntityDto getEntity(String userName, Long entityId);
+
+    void updateEntity(String userName, EntityDto entity);
+
+    TransactionDto getTransaction(String userName, Long txnId, Long entityId);
+
+    void updateTransaction(String userName, TransactionDto txn);
 }

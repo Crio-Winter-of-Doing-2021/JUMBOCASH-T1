@@ -69,9 +69,36 @@ public class MyUserDetailsService implements UserDetailsService, UserService {
     }
 
     @Override
+    public GetTransactionsResponse getTransactions(String userName, Long entityId) {
+        GetTransactionsResponse getTransactionsResponse = userRepositoryService.getTransactions(userName, entityId);
+        return getTransactionsResponse;
+    }
+
+    @Override
     public AddTransactionResponse addTransaction(AddTransactionRequest addTransactionRequest, String userName) {
         AddTransactionResponse addTransactionResponse = userRepositoryService.addTransaction(addTransactionRequest, userName);
         return addTransactionResponse;
+    }
+
+    @Override
+    public EntityDto getEntity(String userName, Long entityId) {
+        EntityDto entityDto = userRepositoryService.getEntity(userName, entityId);
+        return entityDto;
+    }
+
+    @Override
+    public void updateEntity(String userName, EntityDto entity) {
+        userRepositoryService.updateEntity(userName, entity);
+    }
+
+    @Override
+    public TransactionDto getTransaction(String userName, Long txnId, Long entityId) {
+        return userRepositoryService.getTransaction(userName, txnId, entityId);
+    }
+
+    @Override
+    public void updateTransaction(String userName, TransactionDto txn) {
+        userRepositoryService.updateTransaction(userName, txn);
     }
 
     private boolean userNameExistsAlready (String userName) {

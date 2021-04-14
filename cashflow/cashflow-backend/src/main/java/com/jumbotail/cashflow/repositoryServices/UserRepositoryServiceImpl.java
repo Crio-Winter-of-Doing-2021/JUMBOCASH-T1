@@ -102,6 +102,41 @@ public class UserRepositoryServiceImpl implements UserRepositoryService {
     }
 
     @Override
+    public GetTransactionsResponse getTransactions(String userName, Long entityId) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
+
+        UserEntity userEntity = userRepository.findByUserName(userName).get();
+
+        Long cashIn = Long.valueOf("0");
+        Long cashOut = Long.valueOf("0");
+        List<TransactionDto> transactionDtoList = new ArrayList<>();
+
+        List<TransactionEntity> transactionEntities = userEntity.getTransactionEntities();
+
+        for(TransactionEntity txnEntity : transactionEntities) {
+            if(txnEntity.getId() == entityId) {
+                List<Transaction> txnList = txnEntity.getTransactions();
+                for(Transaction txn : txnList) {
+                    TransactionDto transactionDto = modelMapper.map(txn, TransactionDto.class);
+                    transactionDto.setEntityId(txnEntity.getId());
+                    Long amount = transactionDto.getAmount();
+                    if(amount < 0) {
+                        cashOut += amount;
+                    }
+                    else {
+                        cashIn += amount;
+                    }
+                    transactionDtoList.add(transactionDto);
+                }
+            }
+        }
+        Collections.sort(transactionDtoList, (a, b) -> (b.getTimestamp().compareTo(a.getTimestamp())));
+        GetTransactionsResponse getTransactionsResponse = new GetTransactionsResponse(transactionDtoList, cashIn, cashOut);
+        return getTransactionsResponse;
+    }
+
+    @Override
     public GetTransactionsResponse getTransactions(String userName) {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
@@ -122,7 +157,7 @@ public class UserRepositoryServiceImpl implements UserRepositoryService {
                 allTransactionDtoList.add(transactionDto);
             }
         }
-        Collections.sort(allTransactionDtoList, (a, b) -> (a.getTimestamp().compareTo(b.getTimestamp())));
+        Collections.sort(allTransactionDtoList, (a, b) -> (b.getTimestamp().compareTo(a.getTimestamp())));
         GetTransactionsResponse getTransactionsResponse = new GetTransactionsResponse(allTransactionDtoList, cashIn, cashOut);
         return getTransactionsResponse;
     }
@@ -142,9 +177,6 @@ public class UserRepositoryServiceImpl implements UserRepositoryService {
                 entity = txnEntity;
                 break;
             }
-        }
-        if(entity == null) {
-            return null;
         }
 
         Long amountToTransact = addTransactionRequest.getAmount();
@@ -167,6 +199,109 @@ public class UserRepositoryServiceImpl implements UserRepositoryService {
         AddTransactionResponse addTransactionResponse = new AddTransactionResponse(userEntity.getCashIn(), userEntity.getCashOut());
 
         return addTransactionResponse;
+    }
+
+    @Override
+    public EntityDto getEntity(String userName, Long entityId) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
+
+        UserEntity userEntity = userRepository.findByUserName(userName).get();
+
+        List<TransactionEntity> transactionEntities = userEntity.getTransactionEntities();
+
+        for(TransactionEntity txnEntity : transactionEntities) {
+            if (txnEntity.getId() == entityId) {
+                EntityDto entityDto = modelMapper.map(txnEntity, EntityDto.class);
+                return entityDto;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void updateEntity(String userName, EntityDto entity) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
+
+        UserEntity userEntity = userRepository.findByUserName(userName).get();
+        List<TransactionEntity> transactionEntities = userEntity.getTransactionEntities();
+        int len = transactionEntities.size();
+        for(int i = 0 ; i< len ; i++) {
+            if (transactionEntities.get(i).getId() == entity.getId()) {
+                TransactionEntity txnEntity = modelMapper.map(entity, TransactionEntity.class);
+                txnEntity.setTransactions(transactionEntities.get(i).getTransactions());
+                transactionEntities.set(i, txnEntity);
+                break;
+            }
+        }
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public TransactionDto getTransaction(String userName, Long txnId, Long entityId) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
+
+        UserEntity userEntity = userRepository.findByUserName(userName).get();
+        List<TransactionEntity> transactionEntities = userEntity.getTransactionEntities();
+        for(TransactionEntity txnEntity : transactionEntities) {
+            if(txnEntity.getId() == entityId) {
+                List<Transaction> txns = txnEntity.getTransactions();
+                for(Transaction txn : txns) {
+                    if(txn.getId() == txnId) {
+                        TransactionDto txnDto = modelMapper.map(txn, TransactionDto.class);
+                        txnDto.setEntityId(entityId);
+                        return txnDto;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void updateTransaction(String userName, TransactionDto txn) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
+
+        UserEntity userEntity = userRepository.findByUserName(userName).get();
+        List<TransactionEntity> transactionEntities = userEntity.getTransactionEntities();
+        for(TransactionEntity txnEntity : transactionEntities) {
+            if(txnEntity.getId() == txn.getEntityId()) {
+                List<Transaction> txns = txnEntity.getTransactions();
+                int len = txns.size();
+                for(int i = 0 ; i< len ; i++) {
+                    if(txns.get(i).getId() == txn.getId()) {
+                        Transaction finalTxn = modelMapper.map(txn, Transaction.class);
+                        if (finalTxn.getAmount() != txns.get(i).getAmount()) {
+                            Long cashOut = userEntity.getCashOut();
+                            Long cashIn = userEntity.getCashIn();
+                            if(txns.get(i).getAmount() < 0 ) {
+                                cashOut -= txns.get(i).getAmount();
+                            }
+                            else {
+                                cashIn -= txns.get(i).getAmount();
+                            }
+
+                            if(finalTxn.getAmount() < 0) {
+                                cashOut += finalTxn.getAmount();
+                            }
+                            else {
+                                cashIn += finalTxn.getAmount();
+                            }
+                            userEntity.setCashOut(cashOut);
+                            userEntity.setCashIn(cashIn);
+
+                        }
+                        txns.set(i, finalTxn);
+                        break;
+                    }
+                }
+            }
+        }
+        userRepository.save(userEntity);
     }
 
 
