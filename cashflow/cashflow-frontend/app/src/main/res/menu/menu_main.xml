@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <group android:checkableBehavior="single">
+
+    <item android:id="@+id/menuDashboard"
+      android:title="Dashboard"
+      android:icon="@drawable/ic_dashboard_24dp">
+
+    </item>
+
+  </group>
+
+
+
+    <item android:title="Entities">
+
+      <menu>
+        <group android:checkableBehavior="single">
+        <item android:id="@+id/menuBusinessEntities"
+          android:title="Business Entities"
+          android:icon="@drawable/ic_menu_entities"/>
+
+        <item android:id="@+id/menuFavouriteEntities"
+          android:title="Favourite Entities"
+          android:icon="@drawable/ic_favourite_entity_24dp"/>
+
+        <item android:id="@+id/menuAddEntities"
+          android:title="Add Entitity"
+          android:icon="@drawable/ic_add_entity_24dp"/>
+        </group>
+      </menu>
+
+    </item>
+
+
+
+
+
+    <item android:title="Transactions">
+
+      <menu>
+        <group android:checkableBehavior="single">
+        <item android:id="@+id/menuTransactionHistory"
+          android:title="Transaction History"
+          android:icon="@drawable/ic_transaction_history_24dp"/>
+
+       <!-- <item android:id="@+id/menuRecentTransactions"
+          android:title="Recent Transactions"
+          android:icon="@drawable/ic_recent_transactions_24dp"/> -->
+
+        <item android:id="@+id/menuAddTransactions"
+          android:title="Add Transactions"
+          android:icon="@drawable/ic_menu_transaction"/>
+        </group>
+      </menu>
+
+    </item>
+
+
+</menu>

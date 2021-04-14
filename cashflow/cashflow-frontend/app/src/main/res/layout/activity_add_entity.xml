@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context=".ui.entities.AddEntityActivity">
+
+  <Toolbar
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/parsley_theme"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <ImageView
+      android:id="@+id/arrow_feedback_back"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/ic_arrow_back"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:ignore="ContentDescription" />
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Add entities"
+      android:fontFamily="@font/poppins"
+      android:textColor="@color/white"
+      android:textSize="20sp"
+      android:paddingLeft="10dp"/>
+
+  </Toolbar>
+
+  <ImageView
+    android:id="@+id/imageView3"
+    android:layout_width="wrap_content"
+    android:layout_height="150dp"
+    android:layout_marginTop="16dp"
+    android:src="@drawable/ic_entity"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+  <Button
+    android:id="@+id/btnEntitySave"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:text="SAVE"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toTopOf="@+id/btnEntitySave"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/imageView3">
+
+
+    <Button
+      android:id="@+id/btnAddFromContact"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      android:background="@drawable/bg_transparent_button"
+      android:text="Pick from contacts"
+      android:textColor="@color/grey_33"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+
+    <RadioGroup
+      android:id="@+id/radioGroup1"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:orientation="horizontal"
+      app:layout_constraintStart_toStartOf="@+id/inputLayoutAddress"
+      app:layout_constraintTop_toBottomOf="@+id/textView6">
+      <RadioButton
+        android:id="@+id/radioBtnVendor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vendor" />
+
+      <RadioButton
+        android:id="@+id/radioBtnCustomer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="Customer" />
+
+    </RadioGroup>
+
+    <TextView
+      android:id="@+id/textView9"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:fontFamily="@font/poppins"
+      android:text="OR"
+      android:textSize="16sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/btnAddFromContact" />
+
+    <TextView
+      android:id="@+id/textView6"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="32dp"
+      android:layout_marginStart="3dp"
+      android:fontFamily="@font/poppins"
+      android:text="Type of Entity"
+      android:textColor="@color/grey_66"
+      android:textSize="15sp"
+      app:layout_constraintStart_toStartOf="@+id/inputLayoutAddress"
+      app:layout_constraintTop_toBottomOf="@+id/inputLayoutAddress" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/inputLayoutName"
+      style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+      android:layout_width="match_parent"
+      android:layout_height="55dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      android:hint="Full Name"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/textView9"
+      app:startIconDrawable="@drawable/ic_edtext_user">
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/edTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:textSize="13sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/inputLayoutPhone"
+      style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+      android:layout_width="match_parent"
+      android:layout_height="55dp"
+      android:layout_marginTop="8dp"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      android:hint="Mobile Number"
+      app:endIconMode="custom"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/inputLayoutName"
+      app:startIconDrawable="@drawable/ic_edtext_phone">
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/edTextPhone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inputType="number"
+        android:textSize="13sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/inputLayoutAddress"
+      style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+      android:layout_width="match_parent"
+      android:layout_height="55dp"
+      android:layout_marginTop="8dp"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      android:hint="Address"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/inputLayoutPhone"
+      app:startIconDrawable="@drawable/ic_edtext_home">
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/edTextAddress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inputType="text"
+        android:textSize="13sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

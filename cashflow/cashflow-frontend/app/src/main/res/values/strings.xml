@@ -1,0 +1,41 @@
+<resources>
+  <string name="app_name">CashFlow</string>
+  <string name="heading_app_name">CASHFLOW\nBY JUMBOTAIL</string>
+  <string name="heading_app_description">Manage your business cash flow with us without any hazard</string>
+  <string name="login_navigation">Login</string>
+  <string name="signup">Signup</string>
+  <string name="edtext_username">Enter username</string>
+  <string name="enter_password">Enter password</string>
+  <string name="login">Login</string>
+  <string name="forget_password">Forget password?</string>
+  <string name="enter_username">Enter username</string>
+  <string name="please_login_to_continue">Please login to continue</string>
+  <string name="hi_there">Hi there</string>
+  <string name="dashboard">Dashboard</string>
+  <string name="entities">Entities</string>
+  <string name="profile">Profile</string>
+
+  <string name="navigation_close_drawer">Close navigation drawer</string>
+  <string name="navigation_open_drawer">Open navigation drawer</string>
+
+
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
+
+  <!-- Network Errors-->
+  <string name="networkError">Oh! You are not connected to a wifi or cellular data network. Please connect and try again</string>
+  <string name="networkErrorCode">NO_INTERNET_CONNECTION</string>
+  <string name="unknownError">Something went wrong!</string>
+
+  <string name="requestTimeOutError">Oooops! We couldn’t capture your request in time. Please try again.</string>
+
+  <string name="errorCodeMalformedJson">MALFORMED_JSON</string>
+  <string name="responseMalformedJson">Oops! We hit an error. Try again later.</string>
+
+  <string name="errorCodeConnectFailed">Connection failed</string>
+  <string name="responseConnectFailed">Oops! Connection timeout.</string>
+
+  <!-- edit text hints -->
+  <string name="search_entities"><font size="13">Search Entities</font></string>
+
+</resources>

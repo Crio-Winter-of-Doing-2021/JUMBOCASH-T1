@@ -1,0 +1,56 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- Base application theme. -->
+  <style name="Theme.CashFlow" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <!-- Primary brand color. -->
+    <item name="colorPrimary">@color/parsley_theme</item>
+    <item name="colorPrimaryVariant">@color/parsley_theme</item>
+    <item name="colorOnPrimary">@color/white</item>
+    <!-- Secondary brand color. -->
+    <item name="colorSecondary">@color/parsley_theme</item>
+    <item name="colorSecondaryVariant">@color/teal_700</item>
+    <item name="colorOnSecondary">@color/white</item>
+    <!-- Status bar color. -->
+    <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+    <!-- Customize your theme here. -->
+  </style>
+
+  <style name="Fade_PowerSpinner.spin">
+    <item name="android:padding">10dp</item>
+    <item name="android:background">@color/white</item>
+    <item name="android:textColor">@color/grey_66</item>
+    <item name="android:textColorHint">@color/grey_66</item>
+    <item name="android:textSize">12sp</item>
+    <item name="android:gravity">start</item>
+    <item name="spinner_arrow_gravity">end</item>
+    <item name="spinner_arrow_padding">8dp</item>
+    <item name="spinner_arrow_tint">@color/grey_66</item>
+    <item name="spinner_divider_color">@color/grey_66</item>
+    <item name="spinner_divider_show">true</item>
+    <item name="spinner_divider_size">0.4dp</item>
+    <item name="spinner_popup_animation">fade</item>
+    <item name="spinner_popup_background">@color/white</item>
+    <item name="spinner_popup_elevation">14dp</item>
+  </style>
+
+  <!-- rounded buttons-->
+  <style name="Base.Widget.AppCompat.Button.RoundedButton">
+
+    <item name="android:background">@drawable/bg_round_corners</item>
+    <item name="android:backgroundTint">@color/white</item>
+    <item name="android:drawable">@drawable/bg_transparent_button</item>
+
+  </style>
+
+  <!-- material spinner -->
+  <style name="OutlinedRoundedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+    <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MyApp.TextInputLayout.Rounded</item>
+  </style>
+
+  <style name="ShapeAppearanceOverlay.MyApp.TextInputLayout.Rounded" parent="">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSize">8dp</item>
+
+  </style>
+  
+  <style name="Theme.AppCompat.Light.DarkActionBar.Custom" parent="Theme.AppCompat.Light.DarkActionBar" />
+</resources>
