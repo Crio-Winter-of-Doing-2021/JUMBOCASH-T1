@@ -97,11 +97,21 @@ public class CashflowController {
     }
 
     @GetMapping("/transaction")
-    public ResponseEntity<?> getTransactions( ) {
+    public ResponseEntity<?> getTransactions() {
 
         GetTransactionsResponse getTransactionsResponse = userService.getTransactions(getUserName());
 
         return ResponseEntity.ok(getTransactionsResponse);
+    }
+
+    @GetMapping("/transaction/monthly")
+    public ResponseEntity<?> getMonthlyAnalytics(
+            @RequestBody MonthlyAnalyticsRequest monthlyAnalyticsRequest) {
+
+        MonthlyAnalyticsResponse monthlyAnalyticsResponse = userService.
+                getMonthlyAnalytics(getUserName(), monthlyAnalyticsRequest);
+
+        return ResponseEntity.ok(monthlyAnalyticsResponse);
     }
 
     @GetMapping("/transaction/entity/{entityId}")
@@ -156,9 +166,5 @@ public class CashflowController {
         userService.updateTransaction(getUserName(), txn);
         return ResponseEntity.ok("Successful");
     }
-
-
-
-
 
 }

@@ -11,7 +11,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.jumbotail.cashflow.dto.EntityDto;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService, UserService {
@@ -99,6 +104,41 @@ public class MyUserDetailsService implements UserDetailsService, UserService {
     @Override
     public void updateTransaction(String userName, TransactionDto txn) {
         userRepositoryService.updateTransaction(userName, txn);
+    }
+
+    @Override
+    public MonthlyAnalyticsResponse getMonthlyAnalytics(String userName, MonthlyAnalyticsRequest monthlyAnalyticsRequest) {
+        GetTransactionsResponse getTransactionsResponse = userRepositoryService.getTransactions(userName);
+        List<TransactionDto> transactionDtoList= getTransactionsResponse.getTransactionDtoList();
+        Map<Integer, Long> monthlyCashIn = new HashMap<Integer, Long>();
+        Map<Integer, Long> monthlyCashOut = new HashMap<Integer, Long>();
+
+        Timestamp fromTime = monthlyAnalyticsRequest.getFromTimestamp();
+        Timestamp toTime = monthlyAnalyticsRequest.getToTimestamp();
+
+        for(TransactionDto transactionDto : transactionDtoList) {
+            Timestamp time = transactionDto.getTimestamp();
+            if(time != null && time.after(fromTime) && time.before(toTime)) {
+                int month = getMonthFromTimeStamp(time);
+                Long amount = transactionDto.getAmount();
+                if(amount < 0) {
+                    monthlyCashOut.put(month, monthlyCashOut.getOrDefault(month, Long.valueOf("0")) + amount);
+                }
+                else {
+                    monthlyCashIn.put(month, monthlyCashIn.getOrDefault(month, Long.valueOf("0")) + amount);
+                }
+            }
+        }
+
+        MonthlyAnalyticsResponse monthlyAnalyticsResponse = new MonthlyAnalyticsResponse(monthlyCashIn, monthlyCashOut);
+
+        return monthlyAnalyticsResponse;
+    }
+
+    private int getMonthFromTimeStamp(Timestamp timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp.getTime());
+        return calendar.get(Calendar.MONTH);
     }
 
     private boolean userNameExistsAlready (String userName) {

@@ -4,6 +4,8 @@ import com.jumbotail.cashflow.dto.EntityDto;
 import com.jumbotail.cashflow.dto.TransactionDto;
 import com.jumbotail.cashflow.exchanges.*;
 
+import java.sql.Timestamp;
+
 
 public interface UserService {
     UserRegistrationResponse registerUser(UserRegistrationRequest userRegistrationRequest);
@@ -25,4 +27,6 @@ public interface UserService {
     TransactionDto getTransaction(String userName, Long txnId, Long entityId);
 
     void updateTransaction(String userName, TransactionDto txn);
+
+    MonthlyAnalyticsResponse getMonthlyAnalytics(String userName, MonthlyAnalyticsRequest monthlyAnalyticsRequest);
 }
